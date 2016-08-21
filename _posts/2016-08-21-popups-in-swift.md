@@ -168,6 +168,6 @@ Next, add this variable to the top of the `Popup` class:
 var positiveCallback: (Void -> Void)?
 {% endhighlight %}
 
-Run the code, and you should have a working popup. Questions or comments? Please leave your them below.
+Run the code, and you should have a working popup. Questions or comments? Please leave them below.
 
 Full code on [GitHub](https://github.com/guarani/Swift-Popups)

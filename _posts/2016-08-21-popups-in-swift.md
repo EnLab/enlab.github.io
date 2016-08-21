@@ -9,10 +9,12 @@ Here's a how-to on making custom popups in Swift for iOS. In the process, you'll
 
 {% highlight swift %}
 // Usage
-Popup(title: "Deleting all the contents of the internetz...") {
+Popup(title: "Deleting all cat photos from your phone...") {
     print("Ok tapped")
 }.show()
 {% endhighlight %}
+
+![Final product]({{ site.url }}/assets/screenshot.png)
 
 Simple straight forward syntax for calling the popup, _without creating a local variable_. This will help reduce code clutter and make for neater syntax. 
 
@@ -59,7 +61,7 @@ Add a button to the screen to test the popup. The button's action should simply 
 
 {% highlight swift %}
 @IBAction func action(sender: AnyObject) {
-    Popup(title: "Deleting all the contents of the internetz...") {
+    Popup(title: "Deleting all cat photos from your phone...") {
         print("Ok tapped!")
     }.show()
 }
@@ -75,7 +77,7 @@ What's wrong? The problem is that we are not keeping any reference to the popup,
 var popup: Popup!
 
 @IBAction func action(sender: AnyObject) {
-    popup = Popup(title: "Deleting all the contents of the internetz...") {
+    popup = Popup(title: "Deleting all cat photos from your phone...") {
         print("Ok tapped!")
     }
     popup.show()
@@ -95,4 +97,75 @@ init(title: String, positiveCallback: (Void -> Void)? = nil) {
 
 Run the project again, and a semi-transparent popup should cover the entire screen when the button action is called.
 
-![My helpful screenshot]({{ site.url }}/assets/show.gif)
+## Adding The Popup Contents
+
+The contents for this example are a title and OK button, add these to the end of the `init` initializer:
+
+{% highlight swift %}
+// The background view is centered and its size height is dynamic, depending on its contents.
+let backgroundView = UIView()
+backgroundView.backgroundColor = UIColor.whiteColor()
+backgroundView.translatesAutoresizingMaskIntoConstraints = false
+window.addSubview(backgroundView)
+window.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-(40)-[backgroundView]-(40)-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: ["backgroundView": backgroundView]))
+window.addConstraint(NSLayoutConstraint(item: backgroundView, attribute: .CenterY, relatedBy: .Equal, toItem: window, attribute: .CenterY, multiplier: 1, constant: 0))
+backgroundView.layer.cornerRadius = 8
+backgroundView.layer.masksToBounds = true
+
+// The title label, not much happening here.
+let titleLabel = UILabel()
+titleLabel.text = title
+titleLabel.translatesAutoresizingMaskIntoConstraints = false
+backgroundView.addSubview(titleLabel)
+titleLabel.numberOfLines = 0
+titleLabel.lineBreakMode = .ByWordWrapping
+titleLabel.textAlignment = .Center
+backgroundView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-[titleLabel]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: ["titleLabel": titleLabel]))
+
+
+// The OK button.
+let button = UIButton()
+backgroundView.addSubview(button)
+button.translatesAutoresizingMaskIntoConstraints = false
+backgroundView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-[button]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: ["button": button]))
+button.setTitle("Ok", forState: .Normal)
+button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+button.backgroundColor = UIColor.greenColor()
+button.layer.cornerRadius = 8
+button.layer.masksToBounds = true
+button.addTarget(self, action: #selector(positiveButtonCallback), forControlEvents: .TouchUpInside)
+
+// The vertical placement of the title and button. This gives the background view its height.
+let views = ["titleLabel": titleLabel, "button": button]
+backgroundView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-[titleLabel]-[button]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
+{% endhighlight %}
+
+You'll get some errors which we'll fix rightaway. Add these methods to the `Popup`:
+
+{% highlight swift %}
+func close() {
+    // Animate window from opaque to transparent.
+    UIView.animateWithDuration(0.3, animations: {
+        self.window.alpha = 0
+    }, completion: { _ in
+        Popup.popup = nil
+    })
+}
+
+func dismissAction() {
+    close()
+}
+
+func positiveButtonCallback() {
+    positiveCallback?()
+    close()
+}
+{% endhighlight %}
+
+Next, add this variable to the top of the `Popup` class:
+
+{% highlight swift %}
+var positiveCallback: (Void -> Void)?
+{% endhighlight %}
+
+Run the code, and you should have a working popup. Questions or comments? Please leave your them below.

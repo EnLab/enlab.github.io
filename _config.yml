@@ -30,5 +30,6 @@ github:
 gems:
   - jekyll-paginate
   - jekyll-gist
+  - jekyll-avatar
 
 disqus: 'enlabmobile'

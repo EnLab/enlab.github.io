@@ -14,7 +14,7 @@ Popup(title: "Deleting all cat photos from your phone...") {
 }.show()
 {% endhighlight %}
 
-![Final product]({{ site.url }}/assets/screenshot.png)
+<img src="{{ site.url }}/assets/screenshot.png" alt="Screenshot" style="width: 200px;"/>
 
 Simple straight forward syntax for calling the popup, _without creating a local variable_. This will help reduce code clutter and make for neater syntax. 
 

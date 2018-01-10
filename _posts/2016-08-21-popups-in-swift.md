@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Cool Popups in Swift 
+title: Popups in Swift 
 ---
 
 Here's a how-to on making custom popups in Swift for iOS. In the process, you'll learn how to use the `UIWindow` class and static variables.
